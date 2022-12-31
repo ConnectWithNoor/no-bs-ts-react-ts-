@@ -16,24 +16,6 @@ const Box = ({ children }: ReactFCWithChildren) => {
   return <div>{children}</div>;
 };
 
-const List = <T extends string | number>({
-  items,
-  onClick,
-}: {
-  items: T[];
-  onClick?: (item: T) => void;
-}) => {
-  return (
-    <ul>
-      {items.map((item, index) => (
-        <li key={index} onClick={() => onClick?.(item)}>
-          {item}
-        </li>
-      ))}
-    </ul>
-  );
-};
-
 const Button = ({
   children,
   title,
@@ -64,22 +46,6 @@ const useNumber = <T extends number>(initialNumber: T) =>
   useState(initialNumber);
 type UseNumberType = ReturnType<typeof useNumber>;
 
-const Incremental = ({
-  value,
-  setValue,
-}: {
-  value: UseNumberType[0];
-  setValue: UseNumberType[1];
-}) => {
-  return (
-    <Button onClick={() => setValue(value + 1)} title={`Add - ${value}`} />
-  );
-};
-
-interface Payload {
-  text: string;
-}
-
 interface Todo {
   id: number;
   text: string;
@@ -91,15 +57,7 @@ type ActionType =
   | { type: 'REMOVE'; id: number };
 
 function App() {
-  const [payload, setPayload] = useState<null | Payload>(null);
   const newTodoRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    fetch('/data.json')
-      .then((resp) => resp.json())
-      .then((data) => setPayload(data));
-  }, []);
 
   const [todos, dispatch] = useReducer((state: Todo[], action: ActionType) => {
     switch (action.type) {
@@ -140,13 +98,7 @@ function App() {
           display: 'flex',
           justifyContent: 'space-between',
         }}
-      >
-        <List items={['1', '2', '3']} />
-        <List items={[1, 2, 3]} onClick={onListClick} />
-      </div>
-      <Box>{payload?.text}</Box>
-
-      <Incremental value={value} setValue={setValue} />
+      ></div>
 
       <Heading title='Todos' />
       {todos.map((todo, index) => (
