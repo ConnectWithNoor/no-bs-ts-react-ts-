@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import './App.css';
 import { ReactFCWithChildren } from './react-app-env';
-import { useTodos } from './useTodos';
+import { TodoProvider, useAddTodo, useRemoveTodo, useTodos } from './useTodos';
 
 const Heading = ({ title }: { title: string }) => {
   return <h2>{title}</h2>;
@@ -39,13 +39,9 @@ const Button = ({
 
 function App() {
   const newTodoRef = useRef<HTMLInputElement>(null);
-  const { todos, addTodo, removeTodo } = useTodos([
-    {
-      done: false,
-      id: 0,
-      text: 'Hello there',
-    },
-  ]);
+  const todos = useTodos();
+  const addTodo = useAddTodo();
+  const removeTodo = useRemoveTodo();
 
   const onAddTodo = useCallback(() => {
     if (newTodoRef.current?.value) {
@@ -82,4 +78,23 @@ function App() {
   );
 }
 
-export default App;
+const AppWrapper = () => {
+  return (
+    <TodoProvider
+      initialState={[
+        {
+          done: false,
+          id: 0,
+          text: 'Hello there using context',
+        },
+      ]}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+        <App />
+        <App />
+      </div>
+    </TodoProvider>
+  );
+};
+
+export default AppWrapper;
