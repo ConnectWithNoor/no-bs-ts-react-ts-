@@ -13,7 +13,7 @@ type TodoSliceState = {
 };
 
 const initialState: TodoSliceState = {
-  todo: [],
+  todo: [{ id: 0, text: 'Hello There from redux', done: false }],
 };
 
 export const todosSlice = createSlice({
