@@ -1,12 +1,7 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-  useReducer,
-  useRef,
-} from 'react';
+import React, { useCallback, useReducer, useRef } from 'react';
 import './App.css';
 import { ReactFCWithChildren } from './react-app-env';
+import { useTodos } from './useTodos';
 
 const Heading = ({ title }: { title: string }) => {
   return <h2>{title}</h2>;
@@ -42,52 +37,23 @@ const Button = ({
   );
 };
 
-const useNumber = <T extends number>(initialNumber: T) =>
-  useState(initialNumber);
-type UseNumberType = ReturnType<typeof useNumber>;
-
-interface Todo {
-  id: number;
-  text: string;
-  done: boolean;
-}
-
-type ActionType =
-  | { type: 'ADD'; text: string }
-  | { type: 'REMOVE'; id: number };
-
 function App() {
   const newTodoRef = useRef<HTMLInputElement>(null);
-
-  const [todos, dispatch] = useReducer((state: Todo[], action: ActionType) => {
-    switch (action.type) {
-      case 'ADD':
-        return [
-          ...state,
-          {
-            id: state.length,
-            text: action.text,
-            done: false,
-          },
-        ];
-      case 'REMOVE':
-        return state.filter(({ id }) => id !== action.id);
-      default:
-        throw new Error();
-    }
-  }, []);
-
-  const onListClick = useCallback((item: string | number) => {
-    alert(item);
-  }, []);
+  const { todos, addTodo, removeTodo } = useTodos([
+    {
+      done: false,
+      id: 0,
+      text: 'Hello there',
+    },
+  ]);
 
   const onAddTodo = useCallback(() => {
     if (newTodoRef.current?.value) {
-      dispatch({ type: 'ADD', text: newTodoRef.current?.value });
+      addTodo(newTodoRef.current?.value);
 
       newTodoRef.current.value = '';
     }
-  }, []);
+  }, [addTodo]);
 
   return (
     <div>
@@ -104,9 +70,7 @@ function App() {
       {todos.map((todo, index) => (
         <div key={index}>
           {todo.text}
-          <button onClick={() => dispatch({ type: 'REMOVE', id: todo.id })}>
-            Remove
-          </button>
+          <button onClick={() => removeTodo(todo.id)}>Remove</button>
         </div>
       ))}
 
