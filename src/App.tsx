@@ -1,13 +1,15 @@
 import React, { useCallback, useRef } from 'react';
-import './App.css';
-import { ReactFCWithChildren } from './react-app-env';
-import { useTodos } from './useTodos';
 
+import { Provider, useSelector, useDispatch } from 'react-redux';
+
+import { addTodo, store, removeTodo, selectTodos } from './store';
+
+import './App.css';
 const Heading = ({ title }: { title: string }) => {
   return <h2>{title}</h2>;
 };
 
-const Box = ({ children }: ReactFCWithChildren) => {
+const Box = ({ children }: { children: React.ReactNode }) => {
   return <div>{children}</div>;
 };
 
@@ -39,21 +41,16 @@ const Button = ({
 
 function App() {
   const newTodoRef = useRef<HTMLInputElement>(null);
-  const { todos, addTodo, removeTodo } = useTodos([
-    {
-      done: false,
-      id: 0,
-      text: 'Hello there',
-    },
-  ]);
+  const todos = useSelector(selectTodos);
+  const dispatch = useDispatch();
 
   const onAddTodo = useCallback(() => {
     if (newTodoRef.current?.value) {
-      addTodo(newTodoRef.current?.value);
+      dispatch(addTodo(newTodoRef.current?.value));
 
       newTodoRef.current.value = '';
     }
-  }, [addTodo]);
+  }, [dispatch]);
 
   return (
     <div>
@@ -70,7 +67,7 @@ function App() {
       {todos.map((todo, index) => (
         <div key={index}>
           {todo.text}
-          <button onClick={() => removeTodo(todo.id)}>Remove</button>
+          <button onClick={() => dispatch(removeTodo(todo.id))}>Remove</button>
         </div>
       ))}
 
@@ -82,4 +79,20 @@ function App() {
   );
 }
 
-export default App;
+const AppWrapper = () => {
+  return (
+    <Provider store={store}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <App />
+        <App />
+      </div>
+    </Provider>
+  );
+};
+
+export default AppWrapper;
