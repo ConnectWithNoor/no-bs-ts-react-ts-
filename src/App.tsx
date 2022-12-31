@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import './App.css';
 import { ReactFCWithChildren } from './react-app-env';
 import { useTodos } from './useTodos';
