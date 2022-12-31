@@ -34,6 +34,48 @@ const List = <T extends string | number>({
   );
 };
 
+const Button = ({
+  children,
+  title,
+  ...rest
+}: React.DetailedHTMLProps<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+> & { children?: React.ReactNode }) => {
+  return (
+    <button
+      style={{
+        background: 'red',
+        outline: 'none',
+        border: 'none',
+        color: 'whitesmoke',
+        padding: '1rem',
+        borderRadius: '10px',
+        margin: '1rem',
+      }}
+      {...rest}
+    >
+      {title || children}
+    </button>
+  );
+};
+
+const useNumber = <T extends number>(initialNumber: T) =>
+  useState(initialNumber);
+type UseNumberType = ReturnType<typeof useNumber>;
+
+const Incremental = ({
+  value,
+  setValue,
+}: {
+  value: UseNumberType[0];
+  setValue: UseNumberType[1];
+}) => {
+  return (
+    <Button onClick={() => setValue(value + 1)} title={`Add - ${value}`} />
+  );
+};
+
 interface Payload {
   text: string;
 }
@@ -51,6 +93,7 @@ type ActionType =
 function App() {
   const [payload, setPayload] = useState<null | Payload>(null);
   const newTodoRef = useRef<HTMLInputElement>(null);
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     fetch('/data.json')
@@ -81,7 +124,7 @@ function App() {
   }, []);
 
   const onAddTodo = useCallback(() => {
-    if (newTodoRef.current) {
+    if (newTodoRef.current?.value) {
       dispatch({ type: 'ADD', text: newTodoRef.current?.value });
 
       newTodoRef.current.value = '';
@@ -102,6 +145,9 @@ function App() {
         <List items={[1, 2, 3]} onClick={onListClick} />
       </div>
       <Box>{payload?.text}</Box>
+
+      <Incremental value={value} setValue={setValue} />
+
       <Heading title='Todos' />
       {todos.map((todo, index) => (
         <div key={index}>
@@ -114,7 +160,7 @@ function App() {
 
       <div>
         <input type='text' ref={newTodoRef} />
-        <button onClick={onAddTodo}>Add Todo</button>
+        <Button onClick={onAddTodo} title='Add Todo'></Button>
       </div>
     </div>
   );
