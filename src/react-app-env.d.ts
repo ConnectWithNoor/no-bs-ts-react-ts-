@@ -2,4 +2,4 @@
 
 import React from 'react';
 
-export type ReactFCWithChildren = React.FC<PropsWithChildren>;
+export type ReactFCWithChildren = { children: React.ReactNode };
